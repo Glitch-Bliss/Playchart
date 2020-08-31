@@ -1,7 +1,7 @@
 {
   "name": "PlayChart",
   "version": "1.0.0",
-  "description": "Un outil pour façonner une charte de jeu de rôle",
+  "description": "A tool to create a TTRPG chart to agree upon",
   "main": "main.js",
   "repository": "",
   "scripts": {
@@ -29,7 +29,7 @@
   "build": {
     "appId": "playchart",
     "mac": {
-      "category": "Outils de JDR"
+      "category": "TTRPG tool"
     }
   }
 }
