@@ -33,16 +33,20 @@ window.addEventListener('DOMContentLoaded', () => {
   /**
    * We browse all form questions to dynamically create form elements
    */
+  let isFirst = true;
   for (let question of form.questions) {
     let newSection = createNode(sectionElement);
     let sectionId = generateIdFromLabel(question.label);
     newSection.id = sectionId;
-    // let legend = newSection.getElementsByClassName("legend")[0];
-    // legend.innerText = question.label;
 
     //We generate menu
     let tabButton = createNode(`<button class="menu_button"><span>${question.label.toUpperCase()}</span></button>`);
     tabButton.dataset.sectionTarget = sectionId;
+
+    if(isFirst) {
+      tabButton.classList.add("selected");
+      isFirst = false;
+    }
 
     tabButton.addEventListener('click', (event) => {
       for (section of document.getElementsByClassName("form_section")) {

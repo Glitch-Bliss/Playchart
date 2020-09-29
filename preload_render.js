@@ -12,6 +12,9 @@ window.addEventListener('DOMContentLoaded', () => {
 
   ipcRenderer.on('update-render', (event, serializedMap) => {
 
+    // We empty previous results 
+    document.getElementById('anchor').innerHTML = "";
+
     let answersMap = deserialize(serializedMap);
 
     let results = document.createElement("section");
@@ -34,8 +37,8 @@ window.addEventListener('DOMContentLoaded', () => {
     const dialog = require('electron').remote.dialog;
 
     dialog.showSaveDialog({
-      buttonLabel: 'Enluminer',
-      filters: [{ name: 'Fichiers de type PDF je vous prie', extensions: ['pdf'] }],
+      buttonLabel: 'Sauvegarder',
+      filters: [{ name: 'Fichiers de type PDF', extensions: ['pdf'] }],
       property: ['createDirectory', 'showOverwriteConfirmation']
     }).then(path => {
       if (path && path.filePath) {
@@ -51,7 +54,7 @@ window.addEventListener('DOMContentLoaded', () => {
             const options = {
               type: 'info',
               title: 'Information',
-              message: `La charte de jeu ${pdfPath} a bien été générée. Ainsi ai-je parlé.`
+              message: `La charte de jeu ${pdfPath} a bien été générée.`
             }
             dialog.showMessageBox(options, (index) => { });
           })

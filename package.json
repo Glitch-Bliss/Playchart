@@ -1,5 +1,6 @@
 {
   "name": "PlayChart",
+  "author": "Glitch Bliss",
   "version": "1.0.0",
   "description": "A tool to create a TTRPG chart to agree upon",
   "main": "main.js",
@@ -28,6 +29,8 @@
   },
   "build": {
     "appId": "playchart",
+    "productName": "Play Chart Maker",
+    "asar": true,
     "mac": {
       "category": "TTRPG tool"
     }
