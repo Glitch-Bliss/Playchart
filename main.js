@@ -29,7 +29,7 @@ function createWindow() {
   //renderWindow.webContents.openDevTools()
   renderWindow.loadFile('render.html')
 
-  ipcMain.on('send-render-datas', (event, answersMap) => {
+  ipcMain.on('send-render-datas', (event, answersMap) => {    
     renderWindow.webContents.send('update-render', answersMap);
   });
 

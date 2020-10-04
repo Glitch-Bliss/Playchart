@@ -4,7 +4,9 @@ const path = require('path');
 const os = require('os');
 const { electron, ipcRenderer, dialog } = require('electron');
 const form = require('./form.json');
-const { serialize } = require('v8');
+const { serialize, deserialize } = require('v8');
+
+let formName = "form_jdr.json";
 
 const generateIdFromLabel = (label) => {
   let id = label.replace(/\s+/g, '');
@@ -43,7 +45,7 @@ window.addEventListener('DOMContentLoaded', () => {
     let tabButton = createNode(`<button class="menu_button"><span>${question.label.toUpperCase()}</span></button>`);
     tabButton.dataset.sectionTarget = sectionId;
 
-    if(isFirst) {
+    if (isFirst) {
       tabButton.classList.add("selected");
       isFirst = false;
     }
@@ -73,7 +75,7 @@ window.addEventListener('DOMContentLoaded', () => {
       let label = newAnswer.getElementsByTagName("label")[0];
       let input = newAnswer.getElementsByTagName("input")[0];
       let id = generateIdFromLabel(answer.label);
-      label.setAttribute("for", id);  
+      label.setAttribute("for", id);
       label.innerText = answer.label;
       input.name = answer.label;
       input.id = id;
@@ -102,6 +104,71 @@ window.addEventListener('DOMContentLoaded', () => {
 
   //We set the first section active by default
   document.getElementsByClassName("form_section")[0].classList.add("active");
+
+  // Behavior of save button
+  const dialog = require('electron').remote.dialog;
+  saveButton.addEventListener("click", (event) => {
+    dialog.showSaveDialog({
+      buttonLabel: 'Sauvegarder',
+      filters: [{ name: 'Fichiers de type Playchart', extensions: ['playchart'] }],
+      property: ['createDirectory', 'showOverwriteConfirmation']
+    }).then(path => {
+      if (path && path.filePath) {
+
+        const chartPath = path.filePath;
+        let stringAnswerMap = Object.fromEntries(answersMap);
+        let data = JSON.stringify({ formName: formName, answersMap: stringAnswerMap });
+        console.info("Serialized map ==> ", data);
+        fs.writeFile(chartPath, data, (error) => {
+          let options = {};
+          try {
+            if (error) throw error
+            options = {
+              type: 'info',
+              title: 'Information',
+              message: `La charte ${chartPath} a bien été sauvegardée.`
+            }
+          } catch (error) {
+            console.log(`Erreur lors de la sauvegarde de ${chartPath}: `, error)
+            options = {
+              type: 'error',
+              title: 'Erreur d\'enregistrement',
+              message: `La charte n'à PAS été sauvegardée. \n Message : ${error}`
+            }
+          } finally {
+            dialog.showMessageBox(options, (index) => { });
+          }
+        })
+      }
+    })
+    event.preventDefault();
+  });
+
+  // Behavior of open button  
+  openButton.addEventListener("click", (event) => {
+    dialog.showOpenDialog({
+      buttonLabel: 'Ouvrir',
+      filters: [{ name: 'Fichiers de type Playchart', extensions: ['playchart'] }],
+      property: ['openFile']
+    }).then(result => {
+      try {
+        let openedFile = fs.readFileSync(result.filePaths[0]);
+        let jsonData = JSON.parse(openedFile);
+        console.info(jsonData);
+        let savedDatas = deserialize(jsonData.data);
+        console.info(savedDatas);
+      } catch (error) {
+        console.log(`Erreur lors de l'ouverture de ${result.filePaths[0]}`, error)
+        const options = {
+          type: 'error',
+          title: 'Erreur d\'ouverture',
+          message: `Erreur lors de l'ouverture de ${result.filePaths[0]}\n Message : ${error}`
+        }
+        dialog.showMessageBox(options, (index) => { });
+      }
+    })
+    event.preventDefault();
+  });
 
   // We trigger service for PDF generation
   renderButton.addEventListener("click", (event) => {

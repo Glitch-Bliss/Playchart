@@ -1,7 +1,12 @@
+(npm doesn't work)
+yarn dist
+
+Package.json exemple : 
+
 {
   "name": "PlayChart",
   "author": "Glitch Bliss",
-  "version": "1.0.3",
+  "version": "1.0.0",
   "description": "A tool to create a TTRPG chart to agree upon",
   "main": "main.js",
   "repository": "",

@@ -13,31 +13,31 @@ window.addEventListener('DOMContentLoaded', () => {
   ipcRenderer.on('update-render', (event, serializedMap) => {
 
     // We empty previous results 
-    document.getElementById('anchor').innerHTML = "";
+    document.getElementById('results').innerHTML = "";
 
     let answersMap = deserialize(serializedMap);
+    let results = document.getElementById("results");    
 
-    let results = document.createElement("section");
-    results.id = "results";
-    document.body.insertBefore(results, document.getElementById('anchor'));
+    console.info(answersMap);
 
     for (let entry of answersMap) {
-      let title = document.createElement("h2");
-      title.innerText = entry[0];
-      results.appendChild(title);
+      if (entry[1].size > 0) {
+        let title = document.createElement("h2");
+        title.innerText = entry[0];
+        results.appendChild(title);
 
-      let answers = entry[1];
-      for (let answer of answers) {
-        let answerLabel = document.createElement("p");
-        answerLabel.innerHTML = answer.label;
-        results.appendChild(answerLabel);
+        let answers = entry[1];
+        for (let answer of answers) {
+          let answerLabel = document.createElement("p");
+          answerLabel.innerHTML = answer.label;
+          results.appendChild(answerLabel);
+        }
       }
     }
 
     const dialog = require('electron').remote.dialog;
-
     dialog.showSaveDialog({
-      buttonLabel: 'Sauvegarder',
+      buttonLabel: 'Sauvegarder PDF',
       filters: [{ name: 'Fichiers de type PDF', extensions: ['pdf'] }],
       property: ['createDirectory', 'showOverwriteConfirmation']
     }).then(path => {
@@ -46,24 +46,36 @@ window.addEventListener('DOMContentLoaded', () => {
         const pdfPath = path.filePath;
         let win = BrowserWindow.fromId(remote.getCurrentWindow().id);
 
-        win.webContents.printToPDF({}).then(data => {
-          fs.writeFile(pdfPath, data, (error) => {
-            if (error) throw error
-            console.log(`Wrote PDF successfully to ${pdfPath}`)
+        win.webContents.printToPDF({
+          headerFooter: {
+            title: "Charte de jeu",
+            url: ""
+          },
+          printBackground: true
+        }).then(data => {
 
-            const options = {
-              type: 'info',
-              title: 'Information',
-              message: `La charte de jeu ${pdfPath} a bien été générée.`
+          fs.writeFile(pdfPath, data, (error) => {
+            try {
+              if (error) throw error
+              const options = {
+                type: 'info',
+                title: 'Information',
+                message: `La charte de jeu ${pdfPath} a bien été générée.`
+              }
+              dialog.showMessageBox(options, (index) => { });
+            } catch (error) {
+              console.log(`Failed to write PDF to ${pdfPath}: `, error)
+              const options = {
+                type: 'error',
+                title: 'Erreur de génération',
+                message: `Le PDF n'a pu être généré. Le fichier est peut-être ouvert ? \n Message : ${error}`
+              }
+              dialog.showMessageBox(options, (index) => { });
             }
-            dialog.showMessageBox(options, (index) => { });
           })
-        }).catch(error => {
-          console.log(`Failed to write PDF to ${pdfPath}: `, error)
         })
       }
-
     })
-
   })
+
 })

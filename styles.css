@@ -4,6 +4,43 @@ body {
     overflow: hidden;
 }
 
+/** 
+** MENU
+**
+*/
+
+#formsList {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: stretch;
+    padding: 0;
+}
+
+#formsList button {
+    width: 100%;
+    font-family: 'Mukta', sans-serif;
+    font-size: 1em;
+    background-color: #1b1b1b;
+    color: white;
+    border: solid 0px white;
+    margin: 5px;
+    cursor: pointer;
+    padding: 0;
+    text-align: center;
+    line-height: 30px;
+    padding-left: 5px;
+    position: relative;
+    transition: background-color .2s, color .1s;
+    text-transform: uppercase;
+}
+
+#formsList button:after {
+    content: "";
+    display: block;
+    padding-bottom: 90%;
+}
+
 /**
 **   FORM
 **
@@ -17,7 +54,6 @@ body {
     left: 30%;
     overflow-y: scroll;
 }
-
 
 #form_chart input {
     position: absolute;
@@ -118,6 +154,7 @@ body {
 }
 
 .structure menu button {
+    user-select: none;
     order: 0;
     width: 100%;
     font-family: 'Mukta', sans-serif;
@@ -195,28 +232,37 @@ body {
 **  RENDER BUTTON  
 **/
 
-#renderButton {
-    line-height: 30px;
-    display: flex;
+#tools {
+    display: grid;
+    grid-template-columns: 50px 50px auto;
     order: 1;
+    width: 100%;
+}
+
+#tools button {
+    line-height: 30px;
     color: #3b3b3b;
     background: #ffffff;
     text-transform: uppercase;
     border-top: solid 3px black;
-    transition: all .20s ease-Out;
+    transition: all .20s ease-Out;    
 }
 
-#renderButton i {
+#tools .tool-icon {
+    text-align: center;
+}
+
+#tools button i {
     font-size: 30px;
     margin-right: 10px;
     color: #3b3b3b;
     transition: all .20s ease-Out;
 }
 
-#renderButton::before, #renderButton:hover::before {
+#tools button::before, #tools button:hover::before {
     background: none;
 }
 
-#renderButton:hover, #renderButton:hover i {
+#tools button:hover, #tools button:hover i {
     color: #ccae14;
 }

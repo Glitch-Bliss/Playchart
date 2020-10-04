@@ -6,17 +6,26 @@
   <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'">
   <link href="styles.css" rel="stylesheet" type="text/css" />
   <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@700&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans&display=swap" rel="stylesheet"> 
-  <link href="https://fonts.googleapis.com/css2?family=Ubuntu&display=swap" rel="stylesheet"> 
+  <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Ubuntu&display=swap" rel="stylesheet">
   <script src="https://kit.fontawesome.com/7f2f0ac765.js"></script>
   <title>PlayChart</title>
 </head>
 
 <body>
 
+  <!-- <menu id="formsList">
+    <button>Charte Jeu de rôle</button>
+    <button>Charte Jeu de figurines</button>
+  </menu> -->
+
   <div class="structure">
     <menu id="menu">
-      <button id="renderButton"><i class="fas fa-file-download"></i> Générer la charte</button>
+      <div id="tools">
+        <button id="saveButton" class="tool-icon" title="Sauvegarder la charte"><i class="fas fa-save"></i></button>
+        <button id="openButton" class="tool-icon" title="Ouvrir une charte"><i class="fas fa-folder-open"></i></button>
+        <button id="renderButton" title="Générer le PDF"><i class="fas fa-file-download"></i>Générer la charte</button>
+      </div>
     </menu>
     <form id="form_chart">
     </form>
