@@ -2,16 +2,15 @@
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
-const { electron, ipcRenderer, dialog } = require('electron');
-const form = require('./form.json');
+const { electron, ipcRenderer } = require('electron');
 const { serialize, deserialize } = require('v8');
-
-let formName = "form_jdr.json";
-
+const { dialog } = require('electron').remote;
 const generateIdFromLabel = (label) => {
   let id = label.replace(/\s+/g, '');
   return id.toLowerCase();
 }
+
+let answersMap = {};
 
 // Thanks to https://stackoverflow.com/questions/494143/creating-a-new-dom-element-from-an-html-string-using-built-in-dom-methods-or-pro
 const createNode = (htmlCode) => {
@@ -21,9 +20,19 @@ const createNode = (htmlCode) => {
   return template.content.firstChild;
 }
 
-// Object gathering all answers in logical map
-const answersMap = new Map();
-window.addEventListener('DOMContentLoaded', () => {
+const instantiateForm = (jsonForm, filledForm = null) => {
+  const form = require(`.\\${jsonForm}`);
+  /*
+  * Cleaning of previous values
+  */
+  form_chart.innerHTML = "";
+  let buttons = document.querySelectorAll(".menu_button");
+  if (buttons.length > 0) {
+    for (button of buttons) {
+      button.parentNode.removeChild(button);
+    }
+  }
+
   /**
    * We extract elements from form and then clean it
    */
@@ -82,19 +91,27 @@ window.addEventListener('DOMContentLoaded', () => {
       input.value = answer.value;
       newSection.getElementsByClassName("answers")[0].appendChild(newAnswer);
 
+      if (filledForm) {
+        if (filledForm[question.label]) {
+          if (filledForm[question.label].some((item) => item.label == answer.label)) {
+            input.checked = true;
+          }
+        }
+      }
+
       /**
        * We selected, we fill a map with the answer object
        */
       const DTSAnswer = JSON.parse(newAnswer.dataset.answer);
       const DTSSection = newAnswer.dataset.section;
       input.addEventListener("click", (event) => {
-        if (!input.checked) {
-          answersMap.get(DTSSection).delete(DTSAnswer);
+        if (!input.checked && answersMap[DTSSection]) {
+          answersMap[DTSSection] = answersMap[DTSSection].filter((item) => item != DTSAnswer);
         } else {
-          if (!answersMap.get(DTSSection)) {
-            answersMap.set(DTSSection, new Set());
+          if (!answersMap[DTSSection]) {
+            answersMap[DTSSection] = [];
           }
-          answersMap.get(DTSSection).add(DTSAnswer);
+          answersMap[DTSSection].push(DTSAnswer)
         }
       });
     }
@@ -106,7 +123,6 @@ window.addEventListener('DOMContentLoaded', () => {
   document.getElementsByClassName("form_section")[0].classList.add("active");
 
   // Behavior of save button
-  const dialog = require('electron').remote.dialog;
   saveButton.addEventListener("click", (event) => {
     dialog.showSaveDialog({
       buttonLabel: 'Sauvegarder',
@@ -116,9 +132,8 @@ window.addEventListener('DOMContentLoaded', () => {
       if (path && path.filePath) {
 
         const chartPath = path.filePath;
-        let stringAnswerMap = Object.fromEntries(answersMap);
-        let data = JSON.stringify({ formName: formName, answersMap: stringAnswerMap });
-        console.info("Serialized map ==> ", data);
+        let data = JSON.stringify({ formName: jsonForm, answersMap: answersMap });
+
         fs.writeFile(chartPath, data, (error) => {
           let options = {};
           try {
@@ -144,6 +159,15 @@ window.addEventListener('DOMContentLoaded', () => {
     event.preventDefault();
   });
 
+}
+
+// Object gathering all answers in logical map
+window.addEventListener('DOMContentLoaded', () => {
+
+  ipcRenderer.on('init', (event, formType) => {    
+    instantiateForm(formType);
+  });
+
   // Behavior of open button  
   openButton.addEventListener("click", (event) => {
     dialog.showOpenDialog({
@@ -154,9 +178,10 @@ window.addEventListener('DOMContentLoaded', () => {
       try {
         let openedFile = fs.readFileSync(result.filePaths[0]);
         let jsonData = JSON.parse(openedFile);
-        console.info(jsonData);
-        let savedDatas = deserialize(jsonData.data);
-        console.info(savedDatas);
+
+        instantiateForm(jsonData.formName, jsonData.answersMap);
+        answersMap = jsonData.answersMap;
+
       } catch (error) {
         console.log(`Erreur lors de l'ouverture de ${result.filePaths[0]}`, error)
         const options = {
@@ -172,7 +197,13 @@ window.addEventListener('DOMContentLoaded', () => {
 
   // We trigger service for PDF generation
   renderButton.addEventListener("click", (event) => {
-    ipcRenderer.send('send-render-datas', serialize(answersMap));
+    ipcRenderer.send('send-render-datas', answersMap)
+    event.preventDefault();
+  });
+
+  // We go back to welcome screen
+  backButton.addEventListener("click", (event) => {
+    ipcRenderer.send('back-to-welcome')
     event.preventDefault();
   });
 

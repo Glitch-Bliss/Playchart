@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'">
+    <link href="intro.css" rel="stylesheet" type="text/css" />
+    <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/7f2f0ac765.js"></script>
+    <title>PlayChart</title>
+</head>
+
+<body id="body_intro">
+
+    <h1>Type de Charte</h1>
+
+    <section id="templates">
+        <div class="template" data-form="form_jdr.json">
+            <img src="assets/round-table.svg" class="template_image" alt="Jeu de rôle" />
+            <h2>Jeu de Rôle</h2>
+        </div>
+
+        <div class="template soon" data-form="form_jdr.json">
+            <img src="assets/tabletop-players.svg" class="template_image" alt="Jeu de figurine" />
+            <h2>Jeu de Figurines</h2>
+        </div>
+
+        <div class="template soon" data-form="form_jdr.json">
+            <img src="assets/rolling-dice-cup.svg" class="template_image" alt="Jeu de plateau" />
+            <h2>Jeu de Plateau</h2>
+        </div>
+
+
+    </section>
+
+    <!-- You can also require other files to run in this process -->
+    <script src="./renderer.js"></script>
+</body>
+
+</html>

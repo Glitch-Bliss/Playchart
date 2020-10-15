@@ -4,6 +4,7 @@ body {
     overflow: hidden;
 }
 
+
 /** 
 ** MENU
 **
@@ -40,6 +41,7 @@ body {
     display: block;
     padding-bottom: 90%;
 }
+
 
 /**
 **   FORM
@@ -79,7 +81,8 @@ body {
     font-size: 20px;
 }
 
-#form_chart label:hover, input:focus+label {
+#form_chart label:hover,
+input:focus+label {
     box-shadow: 0 0 10px rgba(0, 0, 0, .6);
     z-index: 100;
 }
@@ -121,6 +124,12 @@ body {
     grid-template-columns: 33% 33% 34%;
 }
 
+@media (max-width: 1024px) {
+    .structure .form_section .answers {
+        grid-template-columns: 50% 50%;
+    }
+}
+
 .structure .form_section .answer {
     display: flex;
     flex-direction: row;
@@ -133,6 +142,7 @@ body {
     display: block;
     padding-bottom: 90%;
 }
+
 
 /**
 **   MENU
@@ -228,6 +238,7 @@ body {
     width: 100%;
 }
 
+
 /**
 **  RENDER BUTTON  
 **/
@@ -239,30 +250,46 @@ body {
     width: 100%;
 }
 
-#tools button {
+#back {
+    display: flex;
+    align-items: stretch;
+    /* height: 100%; */
+    align-content: center;
+    width: 100%;
+}
+
+#tools button,
+#back button {
     line-height: 30px;
     color: #3b3b3b;
     background: #ffffff;
     text-transform: uppercase;
     border-top: solid 3px black;
-    transition: all .20s ease-Out;    
+    transition: all .20s ease-Out;
 }
 
 #tools .tool-icon {
     text-align: center;
 }
 
-#tools button i {
+#tools button i,
+#back button i {
     font-size: 30px;
     margin-right: 10px;
     color: #3b3b3b;
     transition: all .20s ease-Out;
 }
 
-#tools button::before, #tools button:hover::before {
+#tools button::before,
+#tools button:hover::before,
+#back button::before,
+#back button:hover::before {
     background: none;
 }
 
-#tools button:hover, #tools button:hover i {
+#tools button:hover,
+#tools button:hover i,
+#back button:hover,
+#back button:hover i {
     color: #ccae14;
 }

@@ -6,28 +6,26 @@ const { electron, ipcRenderer } = require('electron');
 const { remote } = require('electron');
 const { deserialize } = require('v8');
 const { BrowserWindow } = remote;
+const { dialog } = require('electron').remote;
 
 
 window.addEventListener('DOMContentLoaded', () => {
 
-  ipcRenderer.on('update-render', (event, serializedMap) => {
+  ipcRenderer.on('update-render', (event, answersMap) => {
 
     // We empty previous results 
     document.getElementById('results').innerHTML = "";
 
-    let answersMap = deserialize(serializedMap);
-    let results = document.getElementById("results");    
+    // let answersMap = deserialize(serializedMap);
+    let results = document.getElementById("results");
 
-    console.info(answersMap);
-
-    for (let entry of answersMap) {
-      if (entry[1].size > 0) {
+    for (let entry in answersMap) {
+      if (answersMap[entry].length > 0) {
         let title = document.createElement("h2");
-        title.innerText = entry[0];
+        title.innerText = entry;
         results.appendChild(title);
 
-        let answers = entry[1];
-        for (let answer of answers) {
+        for (let answer of answersMap[entry]) {
           let answerLabel = document.createElement("p");
           answerLabel.innerHTML = answer.label;
           results.appendChild(answerLabel);
@@ -35,7 +33,6 @@ window.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    const dialog = require('electron').remote.dialog;
     dialog.showSaveDialog({
       buttonLabel: 'Sauvegarder PDF',
       filters: [{ name: 'Fichiers de type PDF', extensions: ['pdf'] }],
@@ -47,10 +44,6 @@ window.addEventListener('DOMContentLoaded', () => {
         let win = BrowserWindow.fromId(remote.getCurrentWindow().id);
 
         win.webContents.printToPDF({
-          headerFooter: {
-            title: "Charte de jeu",
-            url: ""
-          },
           printBackground: true
         }).then(data => {
 
